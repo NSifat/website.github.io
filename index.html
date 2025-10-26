@@ -5,11 +5,22 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>BIC Admin Portal</title>
+    <link rel="stylesheet" href="/src/index.css" />
+
+    <!-- Styles should be linked or imported, not loaded as a module script.
+         For Vite + React projects the recommended approach is to import the CSS
+         from your entry (src/main.tsx). If you prefer a plain <link>, you can
+         uncomment the line below:
+    -->
+    <!-- <link rel="stylesheet" href="/src/index.css" /> -->
   </head>
   <body>
     <div id="root"></div>
+
+    <!-- Only the JS entry file should be loaded here as a module.
+         Do NOT include .tsx files or .css as <script type="module">.
+         App.tsx should be imported by src/main.tsx, not loaded directly.
+    -->
     <script type="module" src="/src/main.tsx"></script>
-    <script type="module" src="/src/App.tsx"></script>
-    <script type="module" src="/src/index.css"></script>
   </body>
 </html>
