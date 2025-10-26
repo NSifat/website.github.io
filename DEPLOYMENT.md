@@ -42,7 +42,8 @@ If you prefer to deploy manually:
 ### Verification
 
 After deployment, your site will be available at:
-- `https://<username>.github.io/website.github.io/`
+- `https://nsifat.github.io/` (for repository named `<username>.github.io`)
+- Or `https://nsifat.github.io/<repository-name>/` (for other repositories)
 
 Or if using a custom domain, configure it in the repository settings.
 
