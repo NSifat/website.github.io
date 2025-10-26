@@ -44,6 +44,18 @@ function save(d) {
   localStorage.setItem(DATA_KEY, JSON.stringify(d));
 }
 
+function findStudentPayment(data, studentId, paymentId) {
+  const student = data.students.find(s => s.id === studentId);
+  if (!student) return null;
+  return (student.payments || []).find(p => p.id === paymentId);
+}
+
+function findTeacherPayment(data, teacherId, paymentId) {
+  const teacher = data.teachers.find(t => t.id === teacherId);
+  if (!teacher) return null;
+  return (teacher.payments || []).find(p => p.id === paymentId);
+}
+
 export default function App() {
   const [data, setData] = useState(load());
   const [loggedIn, setLoggedIn] = useState(false);
@@ -780,8 +792,11 @@ function ReportsView({ data, monthlyReport }) {
   const [month, setMonth] = useState(new Date().toISOString().slice(0,7));
 
   function downloadPDF() {
-    // Attempt to create PDF using jspdf if available
+    alert('PDF export feature is available after installing jspdf: npm install jspdf');
+    return;
+    /* Uncomment after installing jspdf
     try {
+      // @ts-ignore - jspdf is optional
       import('jspdf').then(module => {
         const { jsPDF } = module;
         const doc = new jsPDF('p', 'pt', 'a4');
@@ -804,6 +819,7 @@ function ReportsView({ data, monthlyReport }) {
     } catch (e) {
       alert('PDF export requires jsPDF. Install with: npm install jspdf');
     }
+    */
   }
 
   const rep = monthlyReport(month);
@@ -861,6 +877,59 @@ function EditPaymentModal({ title, initial, onClose, onSave }) {
         <div className="mt-3 flex justify-end gap-2">
           <button onClick={onClose} className="px-3 py-1 border rounded">Cancel</button>
           <button onClick={save} className="px-3 py-1 bg-teal-600 text-white rounded">Save</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function TeacherPaymentsModal({ teacher, onClose, onAdd, onEdit, onDelete }) {
+  const [amount, setAmount] = useState('');
+  const [date, setDate] = useState(new Date().toISOString().slice(0,10));
+  const [note, setNote] = useState('Salary');
+
+  function addPayment() {
+    if (!amount) { alert('Amount required'); return; }
+    const payment = { id: new Date().getTime().toString(), amount: Number(amount), date, note, description: note };
+    onAdd(payment);
+    setAmount(''); setNote('Salary');
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
+      <div className="bg-white p-4 rounded shadow w-full max-w-2xl">
+        <div className="flex justify-between items-start mb-4">
+          <h4 className="font-semibold">Teacher Payments - {teacher?.name}</h4>
+          <button onClick={onClose} className="px-3 py-1 border rounded">Close</button>
+        </div>
+
+        <div className="mb-4">
+          <h5 className="font-semibold mb-2">Add Payment</h5>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
+            <input placeholder="Amount" value={amount} onChange={e => setAmount(e.target.value)} className="p-2 border rounded" />
+            <input type="date" value={date} onChange={e => setDate(e.target.value)} className="p-2 border rounded" />
+            <input placeholder="Note" value={note} onChange={e => setNote(e.target.value)} className="p-2 border rounded" />
+            <button onClick={addPayment} className="px-3 py-2 bg-teal-600 text-white rounded">Add</button>
+          </div>
+        </div>
+
+        <div>
+          <h5 className="font-semibold mb-2">Payment History</h5>
+          <ul className="space-y-2 text-sm max-h-64 overflow-y-auto">
+            {(teacher?.payments || []).map(p => (
+              <li key={p.id} className="flex justify-between items-center border p-2 rounded">
+                <div>
+                  <div>{p.note || p.description} — ${Number(p.amount).toFixed(2)}</div>
+                  <div className="text-xs text-gray-400">{new Date(p.date).toLocaleDateString()}</div>
+                </div>
+                <div className="flex gap-2">
+                  <button onClick={() => onEdit(p.id)} className="px-2 py-1 border rounded text-sm">Edit</button>
+                  <button onClick={() => onDelete(p.id)} className="px-2 py-1 border rounded text-sm">Delete</button>
+                </div>
+              </li>
+            ))}
+            {(!teacher?.payments || teacher.payments.length === 0) && <div className="text-gray-500">No payments yet</div>}
+          </ul>
         </div>
       </div>
     </div>
