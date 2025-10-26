@@ -867,13 +867,3 @@ function EditPaymentModal({ title, initial, onClose, onSave }) {
   );
 }
 
-function TeacherPaymentsModal({ teacher, onClose, onAdd, onEdit, onDelete }) {
-  const [amount, setAmount] = useState('');
-  const [date, setDate] = useState(new Date().toISOString().slice(0,10));
-  const [note, setNote] = useState('Monthly pay');
-
-  function add() {
-    if (!amount) { alert('Amount required'); return; }
-    const payment = { id: new Date().getTime().toString(), amount: Number(amount), date, note, description: note };
-    onAdd(payment); setAmount(''); setNote('Monthly pay');
-  }
